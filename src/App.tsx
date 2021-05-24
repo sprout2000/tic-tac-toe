@@ -6,6 +6,7 @@ type SquaresType = (string | null)[];
 
 interface History {
   squares: SquaresType;
+  location: { col: number | null; row: number | null };
 }
 
 const calculateWinner = (squares: SquaresType) => {
@@ -85,7 +86,7 @@ const Board: React.VFC<BoardProps> = (props) => {
 
 export const App: React.VFC = () => {
   const [history, setHistory] = useState<History[]>([
-    { squares: Array(9).fill(null) },
+    { squares: Array(9).fill(null), location: { col: null, row: null } },
   ]);
   const [stepNumber, setStepNumber] = useState(0);
   const [xIsNext, setXIsNext] = useState(true);
@@ -99,7 +100,10 @@ export const App: React.VFC = () => {
     }
     squares[i] = xIsNext ? 'X' : 'O';
 
-    setHistory([...history, { squares }]);
+    setHistory([
+      ...historyCurrent,
+      { squares, location: { col: (i % 3) + 1, row: Math.trunc(1 / 3) + 1 } },
+    ]);
     setStepNumber(historyCurrent.length);
     setXIsNext(!xIsNext);
   };
@@ -113,8 +117,11 @@ export const App: React.VFC = () => {
   const current = historyCurrent[stepNumber];
   const winner = calculateWinner(current.squares);
 
-  const moves = history.map((_step, move) => {
-    const desc = move ? `Go to move #${move}` : 'Go to game start';
+  const moves = historyCurrent.map((step, move) => {
+    const player = move % 2 === 0 ? 'O' : 'X';
+    const desc = move
+      ? `Go to move #${move}: ${player} (${step.location.col},${step.location.row})`
+      : 'Go to game start';
     return (
       <li key={move}>
         <button onClick={() => jumpTo(move)}>{desc}</button>
