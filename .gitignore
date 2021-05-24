@@ -1,0 +1,8 @@
+node_modules
+public
+dist
+cypress/**/*.png
+cypress/**/*.mp4
+yarn-*.log
+.env
+.DS_Store
