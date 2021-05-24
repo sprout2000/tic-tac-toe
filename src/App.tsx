@@ -159,6 +159,8 @@ export const App: React.VFC = () => {
 
   const status = winInfo.winner
     ? `Winner: ${winInfo.winner}`
+    : !current.squares.includes(null)
+    ? 'Draw'
     : `Next player: ${xIsNext ? 'X' : 'O'}`;
 
   return (
