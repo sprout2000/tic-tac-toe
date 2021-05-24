@@ -56,6 +56,7 @@ const Board: React.VFC<BoardProps> = (props) => {
   const renderSquare = (i: number) => {
     return (
       <Square
+        key={i}
         id={i}
         value={props.squares[i]}
         onClick={() => props.onClick(i)}
@@ -63,23 +64,18 @@ const Board: React.VFC<BoardProps> = (props) => {
     );
   };
 
+  const rows = [0, 1, 2];
+  const cols = [0, 1, 2];
+
   return (
     <div>
-      <div className="board-row">
-        {renderSquare(0)}
-        {renderSquare(1)}
-        {renderSquare(2)}
-      </div>
-      <div className="board-row">
-        {renderSquare(3)}
-        {renderSquare(4)}
-        {renderSquare(5)}
-      </div>
-      <div className="board-row">
-        {renderSquare(6)}
-        {renderSquare(7)}
-        {renderSquare(8)}
-      </div>
+      {rows.map((row) => {
+        return (
+          <div className="board-row" key={row}>
+            {cols.map((col) => renderSquare(row * 3 + col))}
+          </div>
+        );
+      })}
     </div>
   );
 };
