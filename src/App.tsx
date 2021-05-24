@@ -86,6 +86,7 @@ export const App: React.VFC = () => {
   ]);
   const [stepNumber, setStepNumber] = useState(0);
   const [xIsNext, setXIsNext] = useState(true);
+  const [isAscendingOrder, setIsAscendingOrder] = useState(true);
 
   const handleClick = (i: number) => {
     const historyCurrent = history.slice(0, stepNumber + 1);
@@ -109,20 +110,32 @@ export const App: React.VFC = () => {
     setXIsNext(step % 2 === 0);
   };
 
-  const historyCurrent = history;
-  const current = historyCurrent[stepNumber];
+  const reverseHistoryOrder = () => {
+    setIsAscendingOrder(!isAscendingOrder);
+  };
+
+  const historyCurrent = isAscendingOrder
+    ? history.slice()
+    : history.slice().reverse();
+  const stepNumberCurrent = isAscendingOrder
+    ? stepNumber
+    : historyCurrent.length - 1 - stepNumber;
+  const current = historyCurrent[stepNumberCurrent];
   const winner = calculateWinner(current.squares);
 
   const moves = historyCurrent.map((step, move) => {
     const player = move % 2 === 0 ? 'O' : 'X';
-    const desc = move
-      ? `Go to move #${move}: ${player} (${step.location.col},${step.location.row})`
+    const moveIndex = isAscendingOrder
+      ? move
+      : historyCurrent.length - 1 - move;
+    const desc = moveIndex
+      ? `Go to move #${moveIndex}: ${player} (${step.location.col},${step.location.row})`
       : 'Go to game start';
     return (
       <li key={move}>
         <button
-          className={move === stepNumber ? 'text-bold' : ''}
-          onClick={() => jumpTo(move)}
+          className={move === stepNumberCurrent ? 'text-bold' : ''}
+          onClick={() => jumpTo(moveIndex)}
         >
           {desc}
         </button>
@@ -142,6 +155,7 @@ export const App: React.VFC = () => {
       <div className="game-info">
         <div data-e2e="status">{status}</div>
         <ol>{moves}</ol>
+        <button onClick={reverseHistoryOrder}>Reverse history order</button>
       </div>
     </div>
   );
