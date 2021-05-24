@@ -41,6 +41,14 @@ body {
 
       ol {
         padding-left: 30px;
+
+        li {
+          button {
+            &.text-bold {
+              font-weight: bold;
+            }
+          }
+        }
       }
 
       .status {

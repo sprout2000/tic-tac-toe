@@ -124,7 +124,12 @@ export const App: React.VFC = () => {
       : 'Go to game start';
     return (
       <li key={move}>
-        <button onClick={() => jumpTo(move)}>{desc}</button>
+        <button
+          className={move === stepNumber ? 'text-bold' : ''}
+          onClick={() => jumpTo(move)}
+        >
+          {desc}
+        </button>
       </li>
     );
   });
