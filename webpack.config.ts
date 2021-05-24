@@ -1,18 +1,18 @@
-const path = require('path');
-const HtmlWebpackPlugin = require('html-webpack-plugin');
-const MiniCssExtractPlugin = require('mini-css-extract-plugin');
+import path from 'path';
+import { Configuration } from 'webpack';
+import HtmlWebpackPlugin from 'html-webpack-plugin';
+import MiniCssExtractPlugin from 'mini-css-extract-plugin';
 
 const isDev = process.env.NODE_ENV === 'development';
 
-/** @type import('webpack').Configuration */
-module.exports = {
+const config: Configuration = {
   mode: isDev ? 'development' : 'production',
   target: 'web',
   resolve: {
     extensions: ['.js', '.ts', '.jsx', '.tsx', '.json'],
   },
   entry: {
-    app: './src/index.jsx',
+    app: './src/index.tsx',
   },
   output: {
     path: path.resolve(__dirname, 'public'),
@@ -25,7 +25,7 @@ module.exports = {
       {
         test: /\.(j|t)sx?$/,
         exclude: /node_modules/,
-        loader: 'babel-loader',
+        loader: 'ts-loader',
       },
       {
         test: /\.s?css$/,
@@ -70,3 +70,5 @@ module.exports = {
     port: 3300,
   },
 };
+
+export default config;
