@@ -23,23 +23,30 @@ const calculateWinner = (squares: SquaresType) => {
   for (let i = 0; i < lines.length; i++) {
     const [a, b, c] = lines[i];
     if (squares[a] && squares[a] === squares[b] && squares[a] === squares[c]) {
-      return squares[a];
+      return {
+        winner: squares[a],
+        causedWinCells: lines[i],
+      };
     }
   }
-  return null;
+  return {
+    winner: null,
+    causedWinCells: [],
+  };
 };
 
 interface SquareProps {
   value: string | null;
   onClick: () => void;
   id: number;
+  causedWin: boolean;
 }
 
 const Square: React.VFC<SquareProps> = (props) => {
   return (
     <button
       data-e2e={`button-${props.id}`}
-      className="square"
+      className={props.causedWin ? 'square caused-win' : 'square'}
       onClick={props.onClick}
     >
       {props.value}
@@ -50,16 +57,18 @@ const Square: React.VFC<SquareProps> = (props) => {
 interface BoardProps {
   squares: SquaresType;
   onClick: (i: number) => void;
+  causedWinCells: number[];
 }
 
 const Board: React.VFC<BoardProps> = (props) => {
-  const renderSquare = (i: number) => {
+  const renderSquare = (i: number, causedWin: boolean) => {
     return (
       <Square
         key={i}
         id={i}
         value={props.squares[i]}
         onClick={() => props.onClick(i)}
+        causedWin={causedWin}
       />
     );
   };
@@ -72,7 +81,11 @@ const Board: React.VFC<BoardProps> = (props) => {
       {rows.map((row) => {
         return (
           <div className="board-row" key={row}>
-            {cols.map((col) => renderSquare(row * 3 + col))}
+            {cols.map((col) => {
+              const cell = row * 3 + col;
+              const causedWin = props.causedWinCells.includes(cell);
+              return renderSquare(cell, causedWin);
+            })}
           </div>
         );
       })}
@@ -92,7 +105,8 @@ export const App: React.VFC = () => {
     const historyCurrent = history.slice(0, stepNumber + 1);
     const current = historyCurrent[historyCurrent.length - 1];
     const squares = current.squares.slice();
-    if (calculateWinner(squares) || squares[i]) {
+    const winInfo = calculateWinner(squares);
+    if (winInfo.winner || squares[i]) {
       return;
     }
     squares[i] = xIsNext ? 'X' : 'O';
@@ -121,7 +135,7 @@ export const App: React.VFC = () => {
     ? stepNumber
     : historyCurrent.length - 1 - stepNumber;
   const current = historyCurrent[stepNumberCurrent];
-  const winner = calculateWinner(current.squares);
+  const winInfo = calculateWinner(current.squares);
 
   const moves = historyCurrent.map((step, move) => {
     const player = move % 2 === 0 ? 'O' : 'X';
@@ -143,14 +157,18 @@ export const App: React.VFC = () => {
     );
   });
 
-  const status = winner
-    ? `Winner: ${winner}`
+  const status = winInfo.winner
+    ? `Winner: ${winInfo.winner}`
     : `Next player: ${xIsNext ? 'X' : 'O'}`;
 
   return (
     <div className="game">
       <div className="game-board">
-        <Board squares={current.squares} onClick={(i) => handleClick(i)} />
+        <Board
+          squares={current.squares}
+          onClick={(i) => handleClick(i)}
+          causedWinCells={winInfo.causedWinCells}
+        />
       </div>
       <div className="game-info">
         <div data-e2e="status">{status}</div>

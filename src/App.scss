@@ -32,6 +32,10 @@ body {
             outline: none;
             background: #ddd;
           }
+
+          &.caused-win {
+            background: #fff799;
+          }
         }
       }
     }
