@@ -32,5 +32,10 @@ describe('Test the result of TicTacToe', () => {
       .should('have.text', 'X');
     // Winner: X
     cy.get('[data-e2e="status"]').should('have.text', 'Winner: X');
+
+    const squaresX = [0, 3, 6];
+    for (const i of squaresX) {
+      cy.get(`[data-e2e=button-${i}]`).should('have.class', 'caused-win');
+    }
   });
 });
